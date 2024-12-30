@@ -13,6 +13,10 @@ import org.example.userservice.repository.UsersRepository;
 import org.example.userservice.services.BookService;
 import org.example.userservice.services.UserService;
 import org.example.userservice.utils.Utility;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> createUser(UserRequest request) {
         Users savedUser = usersRepository.save(Users.from(request));
+
         return Map.of("message","user creation successful"
                 ,"user_id", savedUser.getUserId());
     }
@@ -38,6 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getUserDetails(String userId) {
         Users user = utility.getUser(userId);
+
         return Map.of("name", user.getName()
                 ,"user_id",user.getUserId()
                 ,"borrowed_books",user.getBorrowedBooks());
@@ -70,6 +76,14 @@ public class UserServiceImpl implements UserService {
         usersRepository.save(user);
 
         return Map.of("message","Book returned successful");
+    }
+
+    @Override
+    public Page<Users> getAllUsers(int no, int size) {
+
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+        Pageable pageable = PageRequest.of(no, size,sort);
+        return usersRepository.findAll(pageable);
     }
 
     private static void removeFromBorrowedBook(Users user, Books book) {

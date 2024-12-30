@@ -13,5 +13,5 @@ public interface BookService {
     Map<String,String> addBook(AddBookRequest request);
     Books borrowBook(String isbn, Users user);
     Books returnBook(String isbn);
-    Page<Books> searchBookForBook(String keyword, int pageSize, int pageNo);
+    Page<Books> searchBook(String keyword, int pageSize, int pageNo);
 }

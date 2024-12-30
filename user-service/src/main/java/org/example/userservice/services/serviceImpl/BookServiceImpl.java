@@ -51,7 +51,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<Books> searchBookForBook(String keyword, int pageSize, int pageNo) {
+    public Page<Books> searchBook(String keyword, int pageSize, int pageNo) {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
         return booksRepository.fetchByTitleOrAuthor(keyword,pageable);
     }
