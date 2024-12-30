@@ -28,6 +28,9 @@ public class UserServiceImpl implements UserService {
     private final BookService bookService;
     private final Utility utility;
 
+    /**
+     * This method handles user creation.
+     */
     @Override
     public Map<String, String> createUser(UserRequest request) {
         Users savedUser = usersRepository.save(Users.from(request));
@@ -36,6 +39,9 @@ public class UserServiceImpl implements UserService {
                 ,"user_id", savedUser.getUserId());
     }
 
+    /**
+     * This method return a map of user details.
+     */
     @Override
     public Map<String, Object> getUserDetails(String userId) {
         Users user = utility.getUser(userId);
@@ -45,6 +51,9 @@ public class UserServiceImpl implements UserService {
                 ,"borrowed_books",user.getBorrowedBooks());
     }
 
+    /**
+     * This method handles books borrowing.
+     */
     @Transactional
     @Override
     public Map<String, String> borrowBook(BookRequest request) {
@@ -60,6 +69,9 @@ public class UserServiceImpl implements UserService {
         return Map.of("message","Book borrowed successful");
     }
 
+    /**
+     * This method handles returning borrowed books.
+     */
     @Transactional
     @Override
     public Map<String, String> returnBook(BookRequest request) {
@@ -76,6 +88,9 @@ public class UserServiceImpl implements UserService {
         return Map.of("message","Book returned successful");
     }
 
+    /**
+     * This method returns all users in the database.
+     */
     @Override
     public List<Users> getAllUsers() {
         Sort sort = Sort.by(Sort.Order.desc("createdAt"));

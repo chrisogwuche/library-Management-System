@@ -20,6 +20,10 @@ public class BookServiceImpl implements BookService {
     private final BooksRepository booksRepository;
     private final Utility utility;
 
+
+    /**
+     * This method handle the addition of books to database
+     */
     @Override
     public Map<String, String> addBook(AddBookRequest request) {
         validateIsbn(request.getIsbn());
@@ -27,6 +31,9 @@ public class BookServiceImpl implements BookService {
         return Map.of("message","book added successfully");
     }
 
+    /**
+     * This method handles books borrowing.
+     */
     @Override
     public Books borrowBook(String isbn, Users user) {
         Books book = utility.getBookByISBN(isbn);
@@ -38,6 +45,9 @@ public class BookServiceImpl implements BookService {
         return booksRepository.save(book);
     }
 
+    /**
+     * This method handles the returning of borrowed book.
+     */
     @Override
     public Books returnBook(String isbn) {
         Books book = utility.getBookByISBN(isbn);
@@ -48,6 +58,9 @@ public class BookServiceImpl implements BookService {
         return booksRepository.save(book);
     }
 
+    /**
+     * This method handles books searching by author or title.
+     */
     @Override
     public List<Books> searchBook(String keyword) {
         return booksRepository.fetchByTitleOrAuthor(keyword);
