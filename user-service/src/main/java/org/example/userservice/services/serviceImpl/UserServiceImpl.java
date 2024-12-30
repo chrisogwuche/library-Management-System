@@ -1,9 +1,7 @@
 package org.example.userservice.services.serviceImpl;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.userservice.dto.AddBookRequest;
 import org.example.userservice.dto.BookRequest;
 import org.example.userservice.dto.UserRequest;
 import org.example.userservice.entity.Books;
@@ -50,6 +48,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Map<String, String> borrowBook(BookRequest request) {
+        log.info("borrowBook::");
         Users user = utility.getUser(request.getUserId());
 
         Books book = bookService.borrowBook(request.getIsbn(),user);
@@ -64,6 +63,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Map<String, String> returnBook(BookRequest request) {
+        log.info("returnBook::");
 
         Users user = utility.getUser(request.getUserId());
         validateBorrowedBook(request.getIsbn(), user);
@@ -101,69 +101,4 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Book returned failed. Book not borrowed by user");
         }
     }
-
-    @PostConstruct
-    public void onStart(){
-//
-//        addBook();
-//        createUsers();
-
-
-//        returnBook();
-//        borrowBook1();
-//        borrowBook2();
-    }
-
-
-    public void createUsers(){
-        UserRequest r1 = new UserRequest();
-        r1.setName("Chris");
-        UserRequest r2 = new UserRequest();
-        r2.setName("Mike");
-
-        log.info("user 1: {}", createUser(r1));
-        log.info("user 2: {}", createUser(r2));
-    }
-
-    public void addBook(){
-        AddBookRequest r1 = new AddBookRequest();
-        AddBookRequest r2 = new AddBookRequest();
-
-        r1.setAuthor("David");
-        r1.setIsbn("8373928393");
-        r1.setTitle("I am a man");
-
-        r2.setAuthor("Ochanya");
-        r2.setIsbn("8373928394");
-        r2.setTitle("I am a Son");
-
-        log.info("Add book 1: {}", bookService.addBook(r1));
-        log.info("Add book 2: {}",bookService.addBook(r2));
-    }
-
-    public void borrowBook1(){
-        BookRequest bookRequest = new BookRequest();
-        bookRequest.setIsbn("8373928394");
-        bookRequest.setUserId("56becc1a-0556-4e34-b120-db0460bbada7");
-
-        log.info("Borrow book 1 : {}", borrowBook(bookRequest));
-    }
-
-    public void borrowBook2(){
-        BookRequest bookRequest = new BookRequest();
-        bookRequest.setIsbn("8373928393");
-        bookRequest.setUserId("56becc1a-0556-4e34-b120-db0460bbada7");
-
-        log.info("Borrow book 2 : {}", borrowBook(bookRequest));
-    }
-
-    public void returnBook(){
-        BookRequest bookRequest = new BookRequest();
-        bookRequest.setIsbn("8373928393");
-        bookRequest.setUserId("56becc1a-0556-4e34-b120-db0460bbada7");
-
-        log.info("Return book : {}", returnBook(bookRequest));
-
-    }
-
 }
