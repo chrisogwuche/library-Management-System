@@ -3,15 +3,20 @@ package org.example.libraryservice;
 
 import jakarta.jms.JMSException;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.example.libraryservice.dto.AddBookRequest;
+import org.example.libraryservice.dto.BookRequest;
+import org.example.libraryservice.dto.UserDto;
 import org.example.libraryservice.dto.UserRequest;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.*;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Scanner;
 
@@ -37,22 +42,20 @@ public class LibraryServiceApplication implements CommandLineRunner {
                     "Enter 7: To get all users,\n" +
                     "Enter 0: To Exit");
 
-            System.out.print("input: ");
+            System.out.print("Enter input: ");
             int action = scanner.nextInt();
             scanner.nextLine();
 
-            switch (action){
-                case 1:
-                    createUser(scanner);
-                    break;
-
-                case 0:
-                    running = false;
-                    break;
-
-                default:
-                    System.out.println("Wrong input!");
-
+            switch (action) {
+                case 1 -> createUser(scanner);
+                case 2 -> addBook(scanner);
+                case 3 -> borrowBook(scanner);
+                case 4 -> returnBook(scanner);
+                case 5 -> userDetails(scanner);
+                case 6 -> bookSearch(scanner);
+                case 7 -> allUsers();
+                case 0 -> running = false;
+                default -> System.out.println("Wrong input!");
             }
 
         }
@@ -68,16 +71,149 @@ public class LibraryServiceApplication implements CommandLineRunner {
         sendCreateUserRequest(userRequest);
     }
 
+    private void borrowBook(Scanner scanner){
+        System.out.print("Enter user id: ");
+        String userId = scanner.nextLine();
+        System.out.print("Enter book isbn: ");
+        String isbn = scanner.nextLine();
+
+        BookRequest request = new BookRequest();
+        request.setIsbn(isbn);
+        request.setUserId(userId);
+        processBorrowBook(request);
+    }
+
+    private void allUsers(){
+        processAllUsers();
+    }
+
+    private void bookSearch(Scanner scanner){
+        System.out.print("Enter book title or author: ");
+        String keyword = scanner.nextLine();
+
+        UserDto request = new UserDto();
+
+        request.setKeyword(keyword);
+        processBookSearch(request);
+    }
+
+    private void returnBook(Scanner scanner){
+        System.out.print("Enter user id: ");
+        String userId = scanner.nextLine();
+        System.out.print("Enter book isbn: ");
+        String isbn = scanner.nextLine();
+
+        BookRequest request = new BookRequest();
+        request.setIsbn(isbn);
+        request.setUserId(userId);
+        processReturnBook(request);
+    }
+
+    private void userDetails(Scanner scanner){
+        System.out.print("Enter user id: ");
+        String userId = scanner.nextLine();
+
+        UserDto request = new UserDto();
+        request.setId(userId);
+        processUserDetails(request);
+    }
+
+    private void addBook(Scanner scanner){
+        System.out.print("Enter author: ");
+        String author = scanner.nextLine();
+        System.out.print("Enter book isbn: ");
+        String isbn = scanner.nextLine();
+        System.out.print("Enter book title: ");
+        String title = scanner.nextLine();
+
+        AddBookRequest request = new AddBookRequest();
+        request.setAuthor(author);
+        request.setIsbn(isbn);
+        request.setTitle(title);
+
+        processAddBook(request);
+    }
+
     private void sendCreateUserRequest(UserRequest userRequest){
         JmsTemplate jmsTemplate = jmsTemplate();
         jmsTemplate.convertAndSend("add-user",userRequest);
         System.out.println("User created successfully\n\n");
     }
 
-//    private void sendCreateBookRequest(AddBookRequest request){
-//        JmsTemplate jmsTemplate = jmsTemplate();
-//        jmsTemplate.convertAndSend("add-book",request);
-//    }
+    private void processAllUsers() {
+        String url = "http://localhost:8081/user/all-users";
+        try{
+            String response = process(null,url,HttpMethod.GET);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private void processBookSearch(UserDto request) {
+        String url = "http://localhost:8081/user/search";
+        try{
+           String response = process(request,url,HttpMethod.POST);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private void processUserDetails(UserDto request) {
+        String url = "http://localhost:8081/user/user-details";
+        try{
+            String response = process(request,url,HttpMethod.POST);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private void processReturnBook(BookRequest request){
+        String url = "http://localhost:8081/user/return-book";
+        try{
+            String response = process(request,url,HttpMethod.POST);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private void processBorrowBook(BookRequest request){
+        String url = "http://localhost:8081/user/borrow-book";
+        try{
+            String response = process(request,url,HttpMethod.POST);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private void processAddBook(AddBookRequest request){
+        String url = "http://localhost:8081/user/add-book";
+        try{
+            String response = process(request,url,HttpMethod.POST);
+            System.out.println("response: "+response +"\n\n");
+        }
+        catch (Exception e){
+            System.out.println("Error: "+e.getMessage());
+        }
+    }
+
+    private String process(Object object, String url, HttpMethod httpMethod){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<?> httpEntity = new HttpEntity<>(object,headers);
+        return restTemplate.exchange(url,httpMethod,httpEntity,String.class).getBody();
+    }
 
     public MessageConverter jacksonJmsMessageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
@@ -86,8 +222,7 @@ public class LibraryServiceApplication implements CommandLineRunner {
     }
 
     public JmsTemplate jmsTemplate(){
-        CachingConnectionFactory cachingConnectionFactory =
-                null;
+        CachingConnectionFactory cachingConnectionFactory;
         try {
             cachingConnectionFactory = new CachingConnectionFactory(connectionFactory());
         } catch (JMSException e) {

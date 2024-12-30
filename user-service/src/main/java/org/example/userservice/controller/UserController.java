@@ -45,7 +45,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDetails(request.getId()));
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<Books>> searchBook(@RequestBody UserDto request){
         return ResponseEntity.ok(bookService.searchBook(request.getKeyword()));
     }
