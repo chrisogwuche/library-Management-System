@@ -1,6 +1,7 @@
 package org.example.userservice.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userservice.dto.AddBookRequest;
@@ -26,12 +27,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/add-book")
-    public ResponseEntity<Map<String,String>> addBook(@RequestBody AddBookRequest request){
+    public ResponseEntity<Map<String,String>> addBook(@Valid @RequestBody AddBookRequest request){
         return ResponseEntity.ok(bookService.addBook(request));
     }
 
     @PostMapping("/borrow-book")
-    public ResponseEntity<Map<String,String>> borrowBook(@RequestBody BookRequest request){
+    public ResponseEntity<Map<String,String>> borrowBook(@Valid @RequestBody BookRequest request){
         return ResponseEntity.ok(userService.borrowBook(request));
     }
 
