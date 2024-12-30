@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -51,9 +52,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<Books> searchBook(String keyword, int pageSize, int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize);
-        return booksRepository.fetchByTitleOrAuthor(keyword,pageable);
+    public List<Books> searchBook(String keyword) {
+        return booksRepository.fetchByTitleOrAuthor(keyword);
     }
 
     private void validateIsbn(String isbn){

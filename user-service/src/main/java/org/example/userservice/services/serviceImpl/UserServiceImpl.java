@@ -13,13 +13,11 @@ import org.example.userservice.repository.UsersRepository;
 import org.example.userservice.services.BookService;
 import org.example.userservice.services.UserService;
 import org.example.userservice.utils.Utility;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -79,11 +77,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<Users> getAllUsers(int no, int size) {
-
+    public List<Users> getAllUsers() {
         Sort sort = Sort.by(Sort.Order.desc("createdAt"));
-        Pageable pageable = PageRequest.of(no, size,sort);
-        return usersRepository.findAll(pageable);
+        return usersRepository.findAll(sort);
     }
 
     private static void removeFromBorrowedBook(Users user, Books book) {

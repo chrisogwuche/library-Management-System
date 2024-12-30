@@ -10,10 +10,10 @@ import org.example.userservice.entity.Books;
 import org.example.userservice.entity.Users;
 import org.example.userservice.services.BookService;
 import org.example.userservice.services.UserService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -46,15 +46,12 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Books>> searchBook(@RequestParam (name = "page-size") int size
-            , @RequestParam (name = "page-no") int no
-            ,@RequestParam (name = "keyword")  String keyword){
-        return ResponseEntity.ok(bookService.searchBook(keyword,size,no));
+    public ResponseEntity<List<Books>> searchBook(@RequestBody UserDto request){
+        return ResponseEntity.ok(bookService.searchBook(request.getKeyword()));
     }
 
     @GetMapping("/all-users")
-    public ResponseEntity<Page<Users>> allUser(@RequestParam (name = "page-size") int size
-            , @RequestParam (name = "page-no") int no){
-        return ResponseEntity.ok(userService.getAllUsers(size,no));
+    public ResponseEntity<List<Users>> allUser(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }

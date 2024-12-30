@@ -6,6 +6,7 @@ import org.example.userservice.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -14,5 +15,5 @@ public interface UserService {
     Map<String, Object> getUserDetails(String userId);
     Map<String,String> borrowBook(BookRequest request);
     Map<String,String> returnBook(BookRequest request);
-    Page<Users> getAllUsers(int no, int size);
+    List<Users> getAllUsers();
 }
